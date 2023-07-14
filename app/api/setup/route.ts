@@ -6,3 +6,26 @@ import { DirectoryLoader } from 'langchain/document_loaders/fs/directory'
 import { createPineconeIndex, updatePinecone } from "@/utils";
 import { indexName } from "@/config";
 
+export async function POST() {
+    const loader = new DirectoryLoader('./documents', {
+        ".txt": (path) => new TextLoader(path),
+        ".md": (path) => new TextLoader(path),
+        ".pdf": (path) => new PDFLoader(path)
+    })
+
+    const docs = await loader.load()
+    const vectorDimension = 1536
+
+    const client = new PineconeClient()
+    await client.init({
+        apiKey: process.env.PINECONE_API_KEY || '',
+        environment: process.env.PINECONE_ENVIRONMENT || ''
+    })
+
+    try {
+        await createPineconeIndex(client, indexName, vectorDimension)
+        await updatePinecone(client, indexName, docs)
+    } catch (err) {
+        console.log('error: ', err)
+    }
+}
