@@ -74,7 +74,7 @@ export const updatePinecone = async (client, indexName, docs) => {
             };
             batch = [...batch, vector]
             // when batch is full or it's the last item, upsert the vectors
-            if (batch.length === 100 || idx === chunks.length - 1) {
+            if (batch.length === batchSize || idx === chunks.length - 1) {
                 await index.upsert({
                     upsertRequest: {
                         vectors: batch,
@@ -87,3 +87,18 @@ export const updatePinecone = async (client, indexName, docs) => {
 }
 
 // fxn for querying pinecone once we've stored data there
+export const queryPineconeVectorStoreAndQueryLLM = async (client, indexName, question) => {
+    // retrieve pinecone index
+
+    // create query embedding
+
+    // query pinecone index and return top 10 matches
+
+    // check if there are any matches
+
+        // if there are matches, create an openai instance and load the QAStuffChain
+
+        // extract and concatenate page content from matched documents
+
+        // if there are no matches, do not query gpt-3
+}
